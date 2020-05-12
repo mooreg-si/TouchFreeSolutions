@@ -1,0 +1,13 @@
+.demo {
+  .btn {
+    width: 25vw;
+    height: 25vh;
+    background-color: red;
+    border: 5px solid black;
+    margin: 5px;
+    cursor: pointer;
+    &.active {
+      background-color: blue;
+    }
+  }
+}

@@ -1,0 +1,2 @@
+export const ADD_BUTTONS = 'ADD_BUTTONS';
+export const REMOVE_BUTTONS = 'REMOVE_BUTTONS';
