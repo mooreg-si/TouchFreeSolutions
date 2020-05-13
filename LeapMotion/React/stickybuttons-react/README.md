@@ -60,6 +60,9 @@ The StickBtns component accepts two props.
 - `orientation` If the Leap Motion is facing upward or outward, towards the user. 1=Up, 2=Out. Defaults to 1 Up. 
 
 
+## Known Issues
+Right now, this is only working with the older V2 Leap Motion software. It does not work with the V4 Orion Beta.
+
 # Available Scripts
 
 In the project directory, you can run:
