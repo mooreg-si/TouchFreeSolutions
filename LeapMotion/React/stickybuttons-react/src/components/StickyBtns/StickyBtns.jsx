@@ -5,12 +5,10 @@ import { addButtons, removeButtons } from "../../actions/btnActions";
 import Leap from "leapjs";
 import "leapjs-plugins";
 import "./stickyBtns.scss";
-import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
 import debounce from "debounce";
 import { jsonEqual } from "../../actions/utilActions";
-import IosHandOutline from "react-ionicons/lib/IosHandOutline";
 import MdLocate from "react-ionicons/lib/MdLocate";
+import styled from "styled-components";
 
 /*
  * Add this component in your primary app container
@@ -25,15 +23,20 @@ class StickyBtns extends Component {
   yHist = [];
   //array of button coordinates
   btnCoords;
+
   constructor(props) {
     super(props);
     this.state = {
       cursorX: 0,
       cursorY: 0,
-      selectionTimeout: null,
+      hoverTimeout: null,
+      selectorTimeout: null,
       cursorShown: false,
+      selectorShown: true,
     };
+    this.Selector = this.getSelector();
   }
+
   componentDidMount() {
     this._isMounted = true;
     Leap.loop({
@@ -44,7 +47,7 @@ class StickyBtns extends Component {
             cursorX: this.getAverage(hand.screenPosition()[0], "X"),
             cursorY: this.getAverage(
               hand.screenPosition()[this.props.orientation] +
-                window.innerHeight,//automatically adjust to screen size
+                window.innerHeight, //automatically adjust to screen size
               "Y"
             ),
             cursorShown: true,
@@ -56,12 +59,57 @@ class StickyBtns extends Component {
         //if there are no hands in frame
         if (frame.hands.length === 0) {
           //clear the timeout
-          clearTimeout(this.state.selectionTimeout);
+          clearTimeout(this.state.hoverTimeout);
           //hide the cursor
           this.setState({ cursorShown: false, selected: null });
         }
       },
     }).use("screenPosition");
+  }
+
+  /*
+  * Get the styled selector component 
+  * Doing it this way so the animation time can be set dynamically
+  * :before and :after couldn't be set as inline style
+  */
+  getSelector() {
+    //get timeout in seconds from milliseconds
+    const timeoutSecs = this.props.triggerTime / 1000;
+    const Selector = styled.div`
+      .selector {
+        .indicator {
+          &:before {
+            animation: pulse1 ${timeoutSecs}s ease-in-out;
+          }
+          &:after {
+            animation: pulse2 ${timeoutSecs}s ease-in-out;
+          }
+        }
+      }
+      @keyframes pulse1 {
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes pulse2 {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0;
+        }
+        75% {
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 1;
+        }
+      }
+    `;
+    return Selector;
   }
 
   /* Calculate average position over set number of samples */
@@ -85,7 +133,8 @@ class StickyBtns extends Component {
   componentWillUnmount() {
     this._isMounted = false;
     //clean up the timeout
-    clearTimeout(this.state.selectionTimeout);
+    clearTimeout(this.state.hoverTimeout);
+    clearTimeout(this.state.selectorTimeout);
   }
   componentDidUpdate(prevProps, prevState) {
     //if buttons have changed
@@ -145,7 +194,7 @@ class StickyBtns extends Component {
         //if nothing within threshold distance
         if (lowest > 200 && this._isMounted) {
           //stop the timeout
-          clearTimeout(this.state.selectionTimeout);
+          clearTimeout(this.state.hoverTimeout);
           //nothing selected
           this.setState({
             selected: null,
@@ -157,27 +206,33 @@ class StickyBtns extends Component {
           closest
         ) {
           //clear any running timeout
-          clearTimeout(this.state.selectionTimeout);
+          clearTimeout(this.state.hoverTimeout);
+          clearTimeout(this.state.selectorTimeout);
           if (this._isMounted) {
             this.setState({
               selectedBounds: closest.bounds,
               selected: this.props.buttons[closest.name],
               //start a new timeout to click
-              selectionTimeout: setTimeout(() => {
+              hoverTimeout: setTimeout(() => {
                 //click the button
                 this.state.selected.click();
                 this.setState({ selected: null });
               }, this.props.triggerTime),
-              lastSelected: new Date(),//store the time the selection last changed
+              lastSelected: new Date(), //store the time the selection last changed
+              selectorShown: false, //hide the selector to force redraw and animation restart
+              //reshow the selector after timeout
+              selectorTimeout: setTimeout(
+                () => this.setState({ selectorShown: true }),
+                10
+              ),
             });
           }
         }
       }
     }
   }
+
   render() {
-    const progress =
-      (new Date() - this.state.lastSelected) / this.props.triggerTime;
     return (
       <div className="stickyBtns">
         {this.state.cursorShown && (
@@ -190,31 +245,26 @@ class StickyBtns extends Component {
             color="green"
           />
         )}
-
         {
-          //if there is a currently selected button
-          this.state.selected && (
-            <div
-              className="selector"
-              style={{
-                left: `${
-                  this.state.selectedBounds.x +
-                  this.state.selectedBounds.width / 2
-                }px`,
-                top: `${
-                  this.state.selectedBounds.y +
-                  this.state.selectedBounds.height / 2
-                }px`,
-              }}
-            >
-              <IosHandOutline style={{ position: "absolute" }} />
-              <CircularProgressbar
-                minValue={0}
-                maxValue={0.75}
-                strokeWidth={20}
-                value={progress}
-              />
-            </div>
+          //if there is a currently selected button and the selector is shown
+          this.state.selected && this.state.selectorShown && (
+            <this.Selector>
+              <div
+                className="selector"
+                style={{
+                  left: `${
+                    this.state.selectedBounds.x +
+                    this.state.selectedBounds.width / 2
+                  }px`,
+                  top: `${
+                    this.state.selectedBounds.y +
+                    this.state.selectedBounds.height / 2
+                  }px`,
+                }}
+              >
+                <div className="indicator" />
+              </div>
+            </this.Selector>
           )
         }
       </div>
@@ -232,7 +282,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     buttons: state.buttons || {},
     orientation: ownProps.orientation || 1, //1=Up 2=Out
-    triggerTime: ownProps.triggerTime || 2000, //hover time required before click in ms
+    triggerTime: ownProps.triggerTime || 2000, //hover time required before click in milliseconds
   };
 };
 
