@@ -1,6 +1,66 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# Running the Demo
+## Install Node and NPM
+Node can be downloaded from [Node's Website](https://nodejs.org/en/download/) They have pre-built installers for multiple platforms. Pick the best for your system. Once installed, make sure npm is in your path by running `npm -v` to check the node version. 
+## Install Dependencies
+In command prompt or terminal, cd to the stickybuttons-react folder. In this folder, run `npm i` to install the dependencies.
+## Run the Demo
+In the same folder, run `npm start`. This will start the node development server and launch the demo app in your default browser. 
+
+# Using the StickyBtns Component
+Since interactive programming will vary widely, I can only provide general guidelines. 
+- Copy the actions, reducers, and the StickyBtns component folder to your project. Where you put them and how they are incorporated into your app will depend on your file structure and programming.
+- Put the StickyBtns component at the same level as the component you want to control. Your redux provider should enclose both. For example
+    ~~~~
+    <Provider store={store}>
+        <div className="app">
+          <StickyBtns orientation={1} triggerTime={2000}/>
+          <Demo />
+        </div>
+    </Provider>
+    ~~~~
+- In each component with buttons you want to be clickable.
+    - import the addButtons and removeButtons actions. Add them to the redux connect function
+        ~~~~
+        import {addButtons, removeButtons} from '../../actions/btnActions`
+        --------
+        export default connect(null, { addButtons, removeButtons })(Demo);
+        ~~~~
+    
+    - Create a ref for each button that you want to be clickable
+    - In the `componentDidMount` lifecycle method, call the `addButtons` action. The function takes an object where each button has a unique name as the key and the current element as the value.
+        ~~~~
+        this.props.addButtons({ ref1: this.ref1.current, ref2: this.ref2.current });
+        ~~~~
+        In components with a large number of buttons, these can be defined in an object in the constructor
+        ~~~~
+        constructor(props) {
+            super(props);
+            this.clickables={
+                ref1:React.createRef(),
+                ref2:React.createRef()
+            }
+        }
+        --------
+        this.props.addButtons(this.clickables);
+
+        ~~~~
+    - In the `componentWillUnmount` lifecycle method, call the `removeButtons` action. The function takes an array with each button name to be removed.
+        ~~~~
+        this.props.removeButtons(["ref1", "ref2"]);
+        ~~~~
+        If clickables are defined as an object, you can remove them by removing the object keys
+        ~~~~
+        this.props.removeButtons(Object.keys(this.clickables));
+        ~~~~
+## Component Props
+The StickBtns component accepts two props. 
+- `triggerTime` The time in milliseconds a button needs to remain selected before being clicked. Defaults to 2000 milliseconds (2 seconds).
+- `orientation` If the Leap Motion is facing upward or outward, towards the user. 1=Up, 2=Out. Defaults to 1 Up. 
+
+
+# Available Scripts
 
 In the project directory, you can run:
 
