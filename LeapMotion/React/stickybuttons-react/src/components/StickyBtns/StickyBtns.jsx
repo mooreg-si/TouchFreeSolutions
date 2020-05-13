@@ -12,6 +12,11 @@ import { jsonEqual } from "../../actions/utilActions";
 import IosHandOutline from "react-ionicons/lib/IosHandOutline";
 import MdLocate from "react-ionicons/lib/MdLocate";
 
+/*
+ * Add this component in your primary app container
+ * Accepts optional orientation(1=up 2=outward) and triggerTime(ms) props
+ */
+
 class StickyBtns extends Component {
   _isMounted = false;
   //X position history
@@ -35,10 +40,11 @@ class StickyBtns extends Component {
       hand: (hand) => {
         debounce(
           this.setState({
+            //set the cursor position
             cursorX: this.getAverage(hand.screenPosition()[0], "X"),
             cursorY: this.getAverage(
               hand.screenPosition()[this.props.orientation] +
-                window.innerHeight,
+                window.innerHeight,//automatically adjust to screen size
               "Y"
             ),
             cursorShown: true,
@@ -119,7 +125,6 @@ class StickyBtns extends Component {
         let lowest;
         //closest button
         let closest;
-        //if attract is shown
         //loop through each button
         this.btnCoords.forEach((button) => {
           //distance between button left and cursor
@@ -139,7 +144,9 @@ class StickyBtns extends Component {
         });
         //if nothing within threshold distance
         if (lowest > 200 && this._isMounted) {
+          //stop the timeout
           clearTimeout(this.state.selectionTimeout);
+          //nothing selected
           this.setState({
             selected: null,
           });
@@ -149,17 +156,19 @@ class StickyBtns extends Component {
           this.state.selected !== this.props.buttons[closest.name] &&
           closest
         ) {
+          //clear any running timeout
           clearTimeout(this.state.selectionTimeout);
           if (this._isMounted) {
             this.setState({
               selectedBounds: closest.bounds,
               selected: this.props.buttons[closest.name],
+              //start a new timeout to click
               selectionTimeout: setTimeout(() => {
                 //click the button
                 this.state.selected.click();
                 this.setState({ selected: null });
               }, this.props.triggerTime),
-              lastSelected: new Date(),
+              lastSelected: new Date(),//store the time the selection last changed
             });
           }
         }
