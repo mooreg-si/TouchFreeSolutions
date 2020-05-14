@@ -1,0 +1,10 @@
+.btn {
+  width: 25vw;
+  height: 25vh;
+  background-color: white;
+  border: 5px solid #000000;
+  cursor: pointer;
+  &.active {
+    background-color: blue;
+  }
+}
