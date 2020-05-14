@@ -68,10 +68,10 @@ class StickyBtns extends Component {
   }
 
   /*
-  * Get the styled selector component 
-  * Doing it this way so the animation time can be set dynamically
-  * :before and :after couldn't be set as inline style
-  */
+   * Get the styled selector component
+   * Doing it this way so the animation time can be set dynamically
+   * :before and :after couldn't be set as inline style
+   */
   getSelector() {
     //get timeout in seconds from milliseconds
     const timeoutSecs = this.props.triggerTime / 1000;
@@ -192,7 +192,7 @@ class StickyBtns extends Component {
           }
         });
         //if nothing within threshold distance
-        if (lowest > 200 && this._isMounted) {
+        if (lowest > this.props.selectRadius && this._isMounted) {
           //stop the timeout
           clearTimeout(this.state.hoverTimeout);
           //nothing selected
@@ -276,6 +276,7 @@ StickyBtns.propTypes = {
   buttons: propTypes.object.isRequired,
   orientation: propTypes.number.isRequired,
   triggerTime: propTypes.number.isRequired,
+  selectRadius: propTypes.number.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -283,6 +284,7 @@ const mapStateToProps = (state, ownProps) => {
     buttons: state.buttons || {},
     orientation: ownProps.orientation || 1, //1=Up 2=Out
     triggerTime: ownProps.triggerTime || 2000, //hover time required before click in milliseconds
+    selectRadius: ownProps.selectRadius || 200, //distance cursor needs to be from button center to select. Pixels
   };
 };
 

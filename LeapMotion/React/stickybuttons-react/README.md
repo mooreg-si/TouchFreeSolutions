@@ -55,9 +55,10 @@ Since interactive programming will vary widely, I can only provide general guide
         this.props.removeButtons(Object.keys(this.clickables));
         ~~~~
 ## Component Props
-The StickBtns component accepts two props. 
+The StickyBtns component accepts three optional props. 
 - `triggerTime` The time in milliseconds a button needs to remain selected before being clicked. Defaults to 2000 milliseconds (2 seconds).
 - `orientation` If the Leap Motion is facing upward or outward, towards the user. 1=Up, 2=Out. Defaults to 1 Up. 
+- `selectRadius` The distance in pixels the cursor must be from the center of a button to select it. Defaults to 200 pixels.
 
 
 ## Known Issues

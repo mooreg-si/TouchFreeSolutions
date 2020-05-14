@@ -10,7 +10,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div className="app">
-          <StickyBtns orientation={1} triggerTime={2000}/>
+          <StickyBtns orientation={1} triggerTime={2000} selectRadius={200} />
           <Demo />
         </div>
       </Provider>
