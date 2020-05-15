@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Demo</title>
+</head>
+
+<body>
+    <div id="standaloneTarget"></div>
+    <div class="existingContent">
+        <h1>Your existing html content</h1>
+        <div class="btn" id="btn1" onmousedown='handleClick("btn1")'>I listen for mousedown events</div>
+        <div class="btn" id="btn2" onclick='handleClick("btn2")'>I listen for click events</div>
+    </div>
+    <script>function handleClick(e) { document.getElementById(e).classList.toggle("active") }</script>
+    <script src="standalone.js"></script>
+</body>
+
+</html>
