@@ -4,19 +4,18 @@
   "license": "GPL-3.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^7.2.1",
     "debounce": "^1.2.0",
-    "leapjs": "^0.6.4",
-    "leapjs-plugins": "^0.1.12",
-    "node-sass": "^4.14.1",
+    "leapjs": "^1.1.1",
+    "leapjs-plugins": "^0.1.9",
+    "node-sass": "^7.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-ionicons": "^3.1.4",
+    "react-ionicons": "^4.2.0",
     "react-redux": "^7.2.0",
-    "react-scripts": "3.4.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.1.0"
@@ -41,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.0"
   }
 }
